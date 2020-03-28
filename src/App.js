@@ -1,25 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useContext } from 'react';
 import './App.css';
+import { Signup } from './Screens/Signup';
+import { Router, redirectTo, navigate } from '@reach/router';
+import { Login } from './Screens/Login';
+import { AuthContext, emptyAuth } from './AuthContext';
+import { getCurrentUser } from './firebase';
+import { useEffect } from 'react';
+import { Unprotected } from './Routes/Unprotected';
+import { Protected } from './Routes/Protected';
+import { Spin, Row } from 'antd';
+import { Centered } from './Layouts/Centered';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const [auth, setAuth] = useState(null);
+  useEffect(() => {
+    getCurrentUser().then(user => {
+      const auth = user
+        ? {
+            id: user.uid,
+            name: user.displayName,
+            email: user.email,
+            emailVerified: user.emailVerified,
+          }
+        : emptyAuth;
+      setAuth(auth);
+    });
+  }, []);
+
+  const signOut = () => {
+    setAuth(emptyAuth);
+    navigate('/login');
+  };
+
+  const signIn = ({ email, emailVerified, name, id }) =>
+    setAuth({
+      email,
+      emailVerified,
+      name,
+      id,
+    });
+
+  return auth === null ? (
+    <Centered>
+      <Row span={4}>
+        <Spin />
+      </Row>
+    </Centered>
+  ) : (
+    <AuthContext.Provider value={{ auth, signOut, signIn }}>
+      <Router>
+        <Unprotected default />
+        <Protected path="/" />
+      </Router>
+    </AuthContext.Provider>
   );
 }
 
