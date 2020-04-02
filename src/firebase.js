@@ -1,6 +1,6 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
-import 'firebase/database';
+import 'firebase/firestore';
 let firebaseConfig = {
   apiKey: 'AIzaSyBNEZz0NSYRmjQPZJzgdlizAzwHT_lje5k',
   authDomain: 'fitness-breks.firebaseapp.com',
@@ -23,4 +23,6 @@ export const getCurrentUser = () => {
      }, reject);
   });
 }
+
+export const db = firebase.firestore();
 
