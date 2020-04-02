@@ -21,7 +21,6 @@ const LoginForm = () => {
   }, [id, navigate]);
 
   const onFinish = values => {
-    console.log('Success:', values);
     auth
       .signInWithEmailAndPassword(values.email, values.password)
       .then(({ user: { uid: id, displayName: name, email, emailVerified } }) =>
@@ -38,9 +37,6 @@ const LoginForm = () => {
     <Form
       layout="vertical"
       name="basic"
-      initialValues={{
-        remember: true,
-      }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
@@ -54,6 +50,10 @@ const LoginForm = () => {
           {
             required: true,
             message: 'Please input your email!',
+          },
+          {
+            type: 'email',
+            message: 'Please enter a valid email.'
           },
         ]}
       >
